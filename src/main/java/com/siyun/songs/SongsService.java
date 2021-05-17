@@ -4,9 +4,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SongsService {
+    SongsRepository songsRepository;
+
+    public SongsService(SongsRepository songsRepository) {
+        this.songsRepository = songsRepository;
+    }
 
     public SongsList getSongs() {
-        return null;
+        return new SongsList(songsRepository.findAll());
     }
 
     public SongsList getSongs(String artist, String album) {
