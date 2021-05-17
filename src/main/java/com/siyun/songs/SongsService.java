@@ -15,15 +15,15 @@ public class SongsService {
     }
 
     public SongsList getSongs(String artist, String album) {
-        return null;
+        return new SongsList(songsRepository.findByArtistContainsAndAlbumContains(artist, album));
     }
 
     public SongsList getSongsByArtist(String artist) {
-        return null;
+        return new SongsList(songsRepository.findByArtistContains(artist));
     }
 
     public SongsList getSongsByAlbum(String album) {
-        return null;
+        return new SongsList(songsRepository.findByAlbumContains(album));
     }
 
     public Song addSong(Song song) {

@@ -5,13 +5,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,14 +41,35 @@ class SongsServiceTest {
 
     @Test
     void getSongs_withParams() {
+        Song song1 = new Song("Hey Jude", "The Beatles", "The Beatles Again", "HTT538");
+        Song song3 = new Song("Lady Madonna", "The Beatles", "The Beatles Again", "LTT234");
+        List<Song> songs = Arrays.asList(song1, song3);
+        when(songsRepository.findByArtistContainsAndAlbumContains(anyString(), anyString())).thenReturn(songs);
+        SongsList songsList = songsService.getSongs("The Beatles", "The Beatles Again");
+        assertThat(songsList).isNotNull();
+        assertThat(songsList.getSongs().size()).isEqualTo(2);
     }
 
     @Test
     void getSongsByArtist() {
+        Song song1 = new Song("Hey Jude", "The Beatles", "The Beatles Again", "HTT538");
+        Song song3 = new Song("Lady Madonna", "The Beatles", "The Beatles Again", "LTT234");
+        Song song4 = new Song("Come Together", "The Beatles", "Abbey Road", "CTT464");
+        List<Song> songs = Arrays.asList(song1, song3, song4);
+        when(songsRepository.findByArtistContains(anyString())).thenReturn(songs);
+        SongsList songsList = songsService.getSongsByArtist("The Beatles");
+        assertThat(songsList).isNotNull();
+        assertThat(songsList.getSongs().size()).isEqualTo(3);
     }
 
     @Test
     void getSongsByAlbum() {
+        Song song2 = new Song("Blinding Lights", "Weekend", "After Hours", "BWA985");
+        List<Song> songs = Arrays.asList(song2);
+        when(songsRepository.findByAlbumContains(anyString())).thenReturn(songs);
+        SongsList songsList = songsService.getSongsByAlbum("After Hours");
+        assertThat(songsList).isNotNull();
+        assertThat(songsList.getSongs().size()).isEqualTo(1);
     }
 
     @Test
