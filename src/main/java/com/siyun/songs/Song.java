@@ -1,12 +1,16 @@
 package com.siyun.songs;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
 
 @Entity
+@Table(name = "songs")
 public class Song {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
     private String artist;
     private String album;
+    @Column(unique = true)
     private String songCode;
     private boolean liked;
     private int rating;
@@ -20,6 +24,14 @@ public class Song {
         this.album = album;
         this.songCode = songCode;
         this.liked = false;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
