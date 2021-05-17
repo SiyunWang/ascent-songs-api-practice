@@ -7,19 +7,28 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class SongsApplicationTests {
-	@Autowired
-	TestRestTemplate testRestTemplate;
+
 	@Autowired
 	SongsRepository songsRepository;
 
+	@Autowired
+	TestRestTemplate testRestTemplate;
+
 	List<Song> songs;
+
 	@BeforeEach
 	void setup() {
+		songs = new ArrayList<>();
 		songs.add(new Song("Hey Jude", "The Beatles", "The Beatles Again", "HTT538"));
 		songs.add(new Song("Blinding Lights", "Weekend", "After Hours", "BWA985"));
 		songs.add(new Song("Lady Madonna", "The Beatles", "The Beatles Again", "LTT234"));
@@ -42,6 +51,13 @@ class SongsApplicationTests {
 	void contextLoads() {
 	}
 
-
+	@Test
+	void getSongs_noParams_returnsSongsList_NotEmpty() {
+		ResponseEntity<SongsList> response = testRestTemplate.getForEntity("/api/songs", SongsList.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getBody()).isNotNull();
+		assertThat(response.getBody().isEmpty()).isFalse();
+		assertThat(response.getBody().getSongs().size()).isEqualTo(10);
+	}
 
 }
