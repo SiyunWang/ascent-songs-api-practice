@@ -11,8 +11,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -106,6 +108,19 @@ class SongsServiceTest {
     }
 
     @Test
-    void deleteSong() {
+    void deleteSong_whenTargetFound() {
+        Song song = new Song("Lady Madonna", "The Beatles", "The Beatles Again", "LTT234");
+        when(songsRepository.findBySongCode(anyString())).thenReturn(Optional.of(song));
+        songsService.deleteSong(song.getSongCode());
+        verify(songsRepository).delete(song);
+    }
+
+    @Test
+    void deleteSong_whenTargetNotFound() {
+        when(songsRepository.findBySongCode(anyString())).thenReturn(Optional.empty());
+        assertThatExceptionOfType(SongNotFoundException.class)
+                .isThrownBy(() -> {
+                    songsService.deleteSong("songCode not exist");
+                });
     }
 }

@@ -48,6 +48,11 @@ public class SongsService {
     }
 
     public void deleteSong(String songCode) {
-        return;
+        Song song = songsRepository.findBySongCode(songCode).orElse(null);
+        if (song != null) {
+            songsRepository.delete(song);
+        } else {
+            throw new SongNotFoundException();
+        }
     }
 }
