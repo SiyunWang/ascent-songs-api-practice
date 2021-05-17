@@ -1,17 +1,22 @@
 package com.siyun.songs;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -22,6 +27,8 @@ class SongsControllerTest {
 
     @MockBean
     SongsService songsService;
+
+    ObjectMapper mapper = new ObjectMapper();
 
     @Test
     void getSongs_noParams_returnsSongsList_NotEmpty() throws Exception {
@@ -61,7 +68,6 @@ class SongsControllerTest {
     void getSongs_withArtist_returnsSongsList_NotEmpty() throws Exception {
         Song song1 = new Song("Hey Jude", "The Beatles", "The Beatles Again", "HTT538");
         Song song2 = new Song("Blinding Lights", "Weekend", "After Hours", "BWA985");
-        Song song3 = new Song("Lady Madonna", "The Beatles", "The Beatles Again", "LTT234");
         Song song4 = new Song("Come Together", "The Beatles", "Abbey Road", "CTT464");
         SongsList songsList = new SongsList(Arrays.asList(song1, song2, song4));
         when(songsService.getSongsByArtist(anyString())).thenReturn(songsList);
@@ -91,5 +97,26 @@ class SongsControllerTest {
         mockMvc.perform(get("/api/songs?artist=Weekend&album=The Beatles Again"))
                 .andExpect(status().isNoContent());
 
+    }
+
+    @Test
+    void addSong_returnsAddedSong_forValidRequest() throws Exception {
+        Song song = new Song("Lady Madonna", "The Beatles", "The Beatles Again", "LTT234");
+        when(songsService.addSong(any(Song.class))).thenReturn(song);
+        mockMvc.perform(post("/api/songs")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(song)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Lady Madonna"));
+    }
+
+    @Test
+    void addSong_returnsBadRequest_forInvalidRequest() throws Exception {
+        Song song = new Song("Lady Madonna", "The Beatles", "The Beatles Again", "LTT234");
+        when(songsService.addSong(any(Song.class))).thenThrow(InvalidSongException.class);
+        mockMvc.perform(post("/api/songs")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(song)))
+                .andExpect(status().isBadRequest());
     }
 }

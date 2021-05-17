@@ -20,4 +20,8 @@ public class SongsService {
     public SongsList getSongsByAlbum(String album) {
         return null;
     }
+
+    public Song addSong(Song song) {
+        return null;
+    }
 }
