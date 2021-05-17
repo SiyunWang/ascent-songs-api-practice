@@ -34,11 +34,13 @@ class SongsControllerTest {
     void getSongs_noParams_returnsSongsList_NotEmpty() throws Exception {
         Song song1 = new Song("Hey Jude", "The Beatles", "The Beatles Again", "HTT538");
         Song song2 = new Song("Blinding Lights", "Weekend", "After Hours", "BWA985");
-        SongsList songsList = new SongsList(Arrays.asList(song1, song2));
+        Song song3 = new Song("Lady Madonna", "The Beatles", "The Beatles Again", "LTT234");
+        Song song4 = new Song("Come Together", "The Beatles", "Abbey Road", "CTT464");
+        SongsList songsList = new SongsList(Arrays.asList(song1, song2, song3, song4));
         when(songsService.getSongs()).thenReturn(songsList);
         mockMvc.perform(get("/api/songs"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.songs", hasSize(2)));
+                .andExpect(jsonPath("$.songs", hasSize(4)));
 
     }
 
@@ -52,9 +54,6 @@ class SongsControllerTest {
 
     @Test
     void getSongs_withArtistAndAlbum_returnsSongsList_NotEmpty() throws Exception {
-        Song song1 = new Song("Hey Jude", "The Beatles", "The Beatles Again", "HTT538");
-        Song song2 = new Song("Blinding Lights", "Weekend", "After Hours", "BWA985");
-        Song song3 = new Song("Lady Madonna", "The Beatles", "The Beatles Again", "LTT234");
         Song song4 = new Song("Come Together", "The Beatles", "Abbey Road", "CTT464");
         SongsList songsList = new SongsList(Arrays.asList(song4));
         when(songsService.getSongs(anyString(), anyString())).thenReturn(songsList);
@@ -80,9 +79,7 @@ class SongsControllerTest {
     @Test
     void getSongs_withAlbum_returnsSongsList_NotEmpty() throws Exception {
         Song song1 = new Song("Hey Jude", "The Beatles", "The Beatles Again", "HTT538");
-        Song song2 = new Song("Blinding Lights", "Weekend", "After Hours", "BWA985");
         Song song3 = new Song("Lady Madonna", "The Beatles", "The Beatles Again", "LTT234");
-        Song song4 = new Song("Come Together", "The Beatles", "Abbey Road", "CTT464");
         SongsList songsList = new SongsList(Arrays.asList(song1, song3));
         when(songsService.getSongsByAlbum(anyString())).thenReturn(songsList);
         mockMvc.perform(get("/api/songs?album=The Beatles Again"))
@@ -119,4 +116,22 @@ class SongsControllerTest {
                 .content(mapper.writeValueAsString(song)))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void getSongBySongCode_returnsSong_IfFound() throws Exception {
+        Song song = new Song("Lady Madonna", "The Beatles", "The Beatles Again", "LTT234");
+        when(songsService.getSongBySongCode(anyString())).thenReturn(song);
+        mockMvc.perform(get("/api/songs/LTT234"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Lady Madonna"));
+    }
+
+    @Test
+    void getSongBySongCode_returnsNoContent_IfNotFound() throws Exception {
+        when(songsService.getSongBySongCode(anyString())).thenReturn(null);
+        mockMvc.perform(get("/api/songs/LTT234"))
+                .andExpect(status().isNoContent());
+    }
+
+
 }

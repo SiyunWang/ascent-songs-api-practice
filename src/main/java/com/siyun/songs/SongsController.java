@@ -3,6 +3,8 @@ package com.siyun.songs;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/songs")
 public class SongsController {
@@ -37,5 +39,11 @@ public class SongsController {
         } catch (InvalidSongException e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("{songCode}")
+    public ResponseEntity<Song> getSongBySongCode(@PathVariable String songCode) {
+        Song song = songsService.getSongBySongCode(songCode);
+        return song == null ? ResponseEntity.noContent().build() : ResponseEntity.ok(song);
     }
 }

@@ -24,4 +24,8 @@ public class SongsService {
     public Song addSong(Song song) {
         return null;
     }
+
+    public Song getSongBySongCode(String songCode) {
+        return null;
+    }
 }
