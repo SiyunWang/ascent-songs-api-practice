@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -74,6 +75,11 @@ class SongsServiceTest {
 
     @Test
     void addSong() {
+        Song song = new Song("Lady Madonna", "The Beatles", "The Beatles Again", "LTT234");
+        when(songsRepository.save(any(Song.class))).thenReturn(song);
+        Song addedSong = songsService.addSong(song);
+        assertThat(addedSong).isNotNull();
+        assertThat(addedSong.getName()).isEqualTo(song.getName());
     }
 
     @Test

@@ -27,7 +27,7 @@ public class SongsService {
     }
 
     public Song addSong(Song song) {
-        return null;
+        return songsRepository.save(song);
     }
 
     public Song getSongBySongCode(String songCode) {
