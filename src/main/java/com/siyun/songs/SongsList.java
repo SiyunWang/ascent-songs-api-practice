@@ -1,11 +1,13 @@
 package com.siyun.songs;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SongsList {
     private List<Song> songs;
 
     public SongsList() {
+        songs = new ArrayList<>();
     }
 
     public SongsList(List<Song> songs) {

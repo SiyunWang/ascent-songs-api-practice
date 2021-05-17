@@ -8,4 +8,16 @@ public class SongsService {
     public SongsList getSongs() {
         return null;
     }
+
+    public SongsList getSongs(String artist, String album) {
+        return null;
+    }
+
+    public SongsList getSongsByArtist(String artist) {
+        return null;
+    }
+
+    public SongsList getSongsByAlbum(String album) {
+        return null;
+    }
 }
