@@ -1,5 +1,8 @@
 package com.siyun.songs;
 
+import javax.persistence.Entity;
+
+@Entity
 public class Song {
     private String name;
     private String artist;
