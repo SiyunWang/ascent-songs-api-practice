@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,9 +15,11 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -107,6 +108,28 @@ class SongsApplicationTests {
 		ResponseEntity<SongsList> response = testRestTemplate.getForEntity("/api/songs?artist=Weekend&album=Abbey Road", SongsList.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
 		assertThat(response.getBody()).isNull();
+	}
+
+	@Test
+	void addSong_returnsAddedSong_forValidRequest() throws Exception {
+		Song newSong = new Song("Bad Guy", "Billie Eilish", "When We All Fall Asleep, Where Do We Go?", "BBW721");
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<Song> request = new HttpEntity<>(newSong, headers);
+		ResponseEntity<Song> response = testRestTemplate.postForEntity("/api/songs", request, Song.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getBody()).isNotNull();
+		assertThat(response.getBody().getName()).isEqualTo("Bad Guy");
+
+	}
+
+	@Test
+	void addSong_returnsBadRequest_forInvalidRequest() throws Exception {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<Object> request = new HttpEntity<>("newSong", headers);
+		ResponseEntity<Song> response = testRestTemplate.postForEntity("/api/songs", request, Song.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 
 }
