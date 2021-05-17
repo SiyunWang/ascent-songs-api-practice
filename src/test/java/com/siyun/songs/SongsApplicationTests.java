@@ -60,4 +60,14 @@ class SongsApplicationTests {
 		assertThat(response.getBody().getSongs().size()).isEqualTo(10);
 	}
 
+	@Test
+	void getSongs_withParams_returnsNoContent_IfEmpty() {
+		songsRepository.deleteAll();
+		ResponseEntity<SongsList> response = testRestTemplate.getForEntity("/api/songs", SongsList.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+		assertThat(response.getBody()).isNull();
+	}
+
+
+
 }
