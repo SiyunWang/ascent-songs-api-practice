@@ -132,4 +132,19 @@ class SongsApplicationTests {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 
+	@Test
+	void getSongBySongCode_returnsSong_IfFound() throws Exception {
+		ResponseEntity<Song> response = testRestTemplate.getForEntity("/api/songs/HTT538", Song.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getBody()).isNotNull();
+		assertThat(response.getBody().getSongCode()).isEqualTo("HTT538");
+	}
+
+	@Test
+	void getSongBySongCode_returnsNoContent_IfNotFound() throws Exception {
+		ResponseEntity<Song> response = testRestTemplate.getForEntity("/api/songs/HTT539", Song.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+		assertThat(response.getBody()).isNull();
+	}
+
 }
