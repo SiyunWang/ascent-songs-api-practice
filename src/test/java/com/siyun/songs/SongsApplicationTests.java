@@ -176,5 +176,22 @@ class SongsApplicationTests {
 		assertThat(response.getBody()).isNull();
 	}
 
+	@Test
+	void deleteSong_returnsAccepted_ForSuccessfulDelete() {
+		testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+		ResponseEntity<?> response = testRestTemplate.exchange("/api/songs/HTT538", HttpMethod.DELETE, new HttpEntity<>(""), Void.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
+		assertThat(response.getBody()).isNull();
+	}
+
+	@Test
+	void deleteSong_returnsNoContent_IfTargetNotFound() {
+		testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+		ResponseEntity<?> response = testRestTemplate.exchange("/api/songs/HTT539", HttpMethod.DELETE, new HttpEntity<>(""), Void.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+		assertThat(response.getBody()).isNull();
+	}
+
+
 
 }
