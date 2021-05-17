@@ -28,4 +28,8 @@ public class SongsService {
     public Song getSongBySongCode(String songCode) {
         return null;
     }
+
+    public Song updateSong(String songCode, SongUpdate songUpdate) {
+        return null;
+    }
 }

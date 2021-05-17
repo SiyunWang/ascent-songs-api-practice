@@ -16,6 +16,7 @@ public class Song {
         this.artist = artist;
         this.album = album;
         this.songCode = songCode;
+        this.liked = false;
     }
 
     public String getName() {

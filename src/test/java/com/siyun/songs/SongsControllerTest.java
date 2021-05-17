@@ -1,6 +1,5 @@
 package com.siyun.songs;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +14,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -133,5 +131,43 @@ class SongsControllerTest {
                 .andExpect(status().isNoContent());
     }
 
+    @Test
+    void updateSong_returnsUpdatedSong_forSuccessfulUpdate() throws Exception {
+        Song song = new Song("Lady Madonna", "The Beatles", "The Beatles Again", "LTT234");
+        when(songsService.getSongBySongCode(anyString())).thenReturn(song);
+        song.setRating(4);
+        song.setLiked(true);
+        SongUpdate songUpdate = new SongUpdate(4, true);
+        when(songsService.updateSong(anyString(), any(SongUpdate.class))).thenReturn(song);
+        mockMvc.perform(patch("/api/songs/LTT234")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(songUpdate)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Lady Madonna"))
+                .andExpect(jsonPath("$.rating").value(4))
+                .andExpect(jsonPath("$.liked").value(true));
+    }
+
+    @Test
+    void updateSong_returnsNoContent_IfTargetNotFound() throws Exception {
+        when(songsService.getSongBySongCode(anyString())).thenReturn(null);
+        SongUpdate songUpdate = new SongUpdate(4, true);
+        mockMvc.perform(patch("/api/songs/LTT235")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(songUpdate)))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void updateSong_returnsBadRequest_forInvalidRequest() throws Exception {
+        Song song = new Song("Lady Madonna", "The Beatles", "The Beatles Again", "LTT234");
+        SongUpdate songUpdate = new SongUpdate(4, true);
+        when(songsService.getSongBySongCode(anyString())).thenReturn(song);
+        when(songsService.updateSong(anyString(), any(SongUpdate.class))).thenThrow(InvalidUpdateException.class);
+        mockMvc.perform(patch("/api/songs/LTT234")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(songUpdate)))
+                .andExpect(status().isBadRequest());
+    }
 
 }

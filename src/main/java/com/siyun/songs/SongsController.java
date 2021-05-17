@@ -46,4 +46,16 @@ public class SongsController {
         Song song = songsService.getSongBySongCode(songCode);
         return song == null ? ResponseEntity.noContent().build() : ResponseEntity.ok(song);
     }
+
+    @PatchMapping("{songCode}")
+    public ResponseEntity<Song> updateSong(@PathVariable String songCode, @RequestBody SongUpdate songUpdate) {
+        Song song = songsService.getSongBySongCode(songCode);
+        if (song == null) return ResponseEntity.noContent().build();
+        try {
+            Song updatedSong = songsService.updateSong(songCode, songUpdate);
+            return ResponseEntity.ok(updatedSong);
+        } catch (InvalidUpdateException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }
