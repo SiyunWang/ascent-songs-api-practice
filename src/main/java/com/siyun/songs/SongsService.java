@@ -2,6 +2,8 @@ package com.siyun.songs;
 
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class SongsService {
     SongsRepository songsRepository;
@@ -31,7 +33,7 @@ public class SongsService {
     }
 
     public Song getSongBySongCode(String songCode) {
-        return null;
+        return songsRepository.findBySongCode(songCode).orElse(null);
     }
 
     public Song updateSong(String songCode, SongUpdate songUpdate) {

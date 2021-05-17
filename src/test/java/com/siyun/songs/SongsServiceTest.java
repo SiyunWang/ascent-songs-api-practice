@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -84,6 +85,11 @@ class SongsServiceTest {
 
     @Test
     void getSongBySongCode() {
+        Song song = new Song("Lady Madonna", "The Beatles", "The Beatles Again", "LTT234");
+        when(songsRepository.findBySongCode(anyString())).thenReturn(Optional.of(song));
+        Song songBySongCode = songsService.getSongBySongCode(song.getSongCode());
+        assertThat(songBySongCode).isNotNull();
+        assertThat(songBySongCode.getName()).isEqualTo(song.getName());
     }
 
     @Test
