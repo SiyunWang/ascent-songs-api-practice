@@ -94,6 +94,15 @@ class SongsServiceTest {
 
     @Test
     void updateSong() {
+        Song song = new Song("Lady Madonna", "The Beatles", "The Beatles Again", "LTT234");
+        SongUpdate songUpdate = new SongUpdate(4, true);
+        when(songsRepository.findBySongCode(anyString())).thenReturn(Optional.of(song));
+        when(songsRepository.save(any(Song.class))).thenReturn(song);
+        Song updatedSong = songsService.updateSong(song.getSongCode(), songUpdate);
+        assertThat(updatedSong).isNotNull();
+        assertThat(updatedSong.getName()).isEqualTo(song.getName());
+        assertThat(updatedSong.getRating()).isEqualTo(4);
+        assertThat(updatedSong.isLiked()).isTrue();
     }
 
     @Test

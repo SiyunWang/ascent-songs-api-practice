@@ -37,6 +37,13 @@ public class SongsService {
     }
 
     public Song updateSong(String songCode, SongUpdate songUpdate) {
+        Song song = songsRepository.findBySongCode(songCode).orElse(null);
+        if (song != null) {
+            song.setLiked(songUpdate.isLiked());
+            song.setRating(songUpdate.getRating());
+            songsRepository.save(song);
+            return song;
+        }
         return null;
     }
 
