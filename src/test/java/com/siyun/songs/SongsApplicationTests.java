@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -146,5 +147,34 @@ class SongsApplicationTests {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
 		assertThat(response.getBody()).isNull();
 	}
+
+	@Test
+	void updateSong_returnsUpdatedSong_forSuccessfulUpdate() {
+		testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+		SongUpdate update = new SongUpdate(4, true);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<SongUpdate> request = new HttpEntity<>(update, headers);
+
+		ResponseEntity<Song> response = testRestTemplate.exchange("/api/songs/HTT538", HttpMethod.PATCH, request, Song.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getBody()).isNotNull();
+		assertThat(response.getBody().getRating()).isEqualTo(4);
+		assertThat(response.getBody().isLiked()).isTrue();
+	}
+
+	@Test
+	void updateSong_returnsNoContent_IfTargetNotFound() {
+		testRestTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+		SongUpdate update = new SongUpdate(4, true);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<SongUpdate> request = new HttpEntity<>(update, headers);
+
+		ResponseEntity<Song> response = testRestTemplate.exchange("/api/songs/HTT539", HttpMethod.PATCH, request, Song.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+		assertThat(response.getBody()).isNull();
+	}
+
 
 }
