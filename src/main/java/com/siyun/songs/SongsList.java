@@ -1,5 +1,7 @@
 package com.siyun.songs;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,7 @@ public class SongsList {
         this.songs = songs;
     }
 
+    @JsonIgnore
     public boolean isEmpty() {
         return songs.size() == 0;
     }
