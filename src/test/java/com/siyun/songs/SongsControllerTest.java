@@ -13,7 +13,7 @@ import java.util.Arrays;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -170,4 +170,17 @@ class SongsControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void deleteSong_returnsAccepted_ForSuccessfulDelete() throws Exception {
+        mockMvc.perform(delete("/api/songs/LTT234"))
+                .andExpect(status().isAccepted());
+        verify(songsService).deleteSong(anyString());
+    }
+
+    @Test
+    void deleteSong_returnsNoContent_IfTargetNotFound() throws Exception {
+        doThrow(SongNotFoundException.class).when(songsService).deleteSong(anyString());
+        mockMvc.perform(delete("/api/songs/LTT235"))
+                .andExpect(status().isNoContent());
+    }
 }

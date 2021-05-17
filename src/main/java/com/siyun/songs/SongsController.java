@@ -58,4 +58,14 @@ public class SongsController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @DeleteMapping("{songCode}")
+    public ResponseEntity deleteSong(@PathVariable String songCode) {
+        try {
+            songsService.deleteSong(songCode);
+        } catch (SongNotFoundException e) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.accepted().build();
+    }
 }

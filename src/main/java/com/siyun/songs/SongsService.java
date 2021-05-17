@@ -32,4 +32,8 @@ public class SongsService {
     public Song updateSong(String songCode, SongUpdate songUpdate) {
         return null;
     }
+
+    public void deleteSong(String songCode) {
+        return;
+    }
 }
